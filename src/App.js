@@ -1,106 +1,85 @@
-import React from "react";
+import { useState } from "react";
 import Todo from "./Todo";
 import "./App.css";
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      todos: [
-        {
-          text: "Đi chợ",
-          isCompleted: true,
-        },
-        {
-          text: "Nấu cơm",
-          isCompleted: true,
-        },
-        {
-          text: "Rửa bát",
-          isCompleted: false,
-        },
-        {
-          text: "Giặt đồ",
-          isCompleted: false,
-        },
-      ],
-      input: "",
-    };
+function App() {
+  const [todos, setTodos] = useState([
+    {
+      text: "Đi chợ",
+      isCompleted: true,
+    },
+    {
+      text: "Nấu cơm",
+      isCompleted: true,
+    },
+    {
+      text: "Rửa bát",
+      isCompleted: false,
+    },
+    {
+      text: "Giặt đồ",
+      isCompleted: false,
+    },
+  ]);
+  const [input, setInput] = useState("");
+
+  function handleClick(i) {
+    const newTodos = todos.slice();
+    newTodos[i].isCompleted = !todos[i].isCompleted;
+
+    setTodos(newTodos);
   }
 
-  handleClick(i) {
-    const todos = this.state.todos.slice();
-    todos[i].isCompleted = !todos[i].isCompleted;
-
-    this.setState({
-      todos: todos,
-    });
+  function handleInput(e) {
+    setInput(e.target.value);
   }
 
-  handleInput(e) {
-    this.setState({
-      input: e.target.value,
-    });
-  }
-
-  addTodo(e) {
+  function addTodo(e) {
     e.preventDefault();
-    const todos = this.state.todos.slice();
-    const text = this.state.input;
 
-    if (text === "") return;
+    if (input === "") return;
 
-    this.setState({
-      todos: [
-        ...todos,
-        {
-          text: text,
-          isCompleted: false,
-        },
-      ],
-      input: "",
-    });
+    setTodos([
+      ...todos,
+      {
+        text: input,
+        isCompleted: false,
+      },
+    ]);
+    setInput("");
   }
 
-  handleRemove(i) {
-    const todos = [
-      ...this.state.todos.slice(0, i),
-      ...this.state.todos.slice(i + 1),
-    ];
-
-    this.setState({
-      todos: todos,
-    });
+  function handleRemove(i) {
+    setTodos([...todos.slice(0, i), ...todos.slice(i + 1)]);
   }
 
-  renderTodo(todo, i) {
+  function renderTodo(todo, i) {
     return (
       <Todo
         key={i}
         text={todo.text}
         isCompleted={todo.isCompleted}
-        onClick={() => this.handleClick(i)}
-        onRemove={() => this.handleRemove(i)}
+        onClick={() => handleClick(i)}
+        onRemove={() => handleRemove(i)}
       />
     );
   }
 
-  render() {
-    return (
-      <div>
-        <form action="" method="POST" onSubmit={(e) => this.addTodo(e)}>
-          <input
-            type="text"
-            placeholder="Add to-do.."
-            onChange={(e) => this.handleInput(e)}
-            value={this.state.input}
-          />
-          <button type="submit">Add To-do</button>
-        </form>
-        <ul>{this.state.todos.map((todo, i) => this.renderTodo(todo, i))}</ul>
-      </div>
-    );
-  }
+  return (
+    <div>
+      <form action="" method="POST" onSubmit={(e) => addTodo(e)}>
+        <input
+          type="text"
+          placeholder="Add to-do.."
+          onChange={(e) => handleInput(e)}
+          value={input}
+        />
+        <button type="submit">Add To-do</button>
+      </form>
+
+      <ul>{todos.map((todo, i) => renderTodo(todo, i))}</ul>
+    </div>
+  );
 }
 
 export default App;
